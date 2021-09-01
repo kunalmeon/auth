@@ -1,0 +1,25 @@
+{
+  "name": "optionxa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
+  },
+  "author": "Karan Budha Air",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.2",
+    "nodemon": "^2.0.12"
+  },
+  "devDependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^8.5.1",
+    "validator": "^13.6.0"
+  }
+}
