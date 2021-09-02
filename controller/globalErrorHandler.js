@@ -31,6 +31,15 @@ function handlerValidatorError(errorObject) {
   return new appError(message, 400);
 }
 
+//Token Error 
+function handleJsonWebTokenError(err){
+  return new appError("invalid token! Please Login Agian",401)
+}
+
+function handleTokenExpiredError(err){
+  return new appError("Token Expired! Please Login Again",401)
+}
+
 function handleProductionError(err, res) {
   if (err.isOperational) {
     res.status(err.statusCode).json({
@@ -61,6 +70,12 @@ module.exports = (err, req, res, next) => {
     }
     if (errorObject.name === "ValidationError") {
       errorObject = handlerValidatorError(errorObject);
+    }
+    if(errorObject.name==="JsonWebTokenError"){
+      errorObject=handleJsonWebTokenError(errorObject)
+    }
+    if(errorObject.name==="TokenExpiredError"){
+      errorObject=handleTokenExpiredError(errorObject)
     }
     handleProductionError(errorObject, res);
   }

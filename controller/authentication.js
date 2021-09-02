@@ -2,6 +2,7 @@ const userModel = require("../models/userModel");
 const jsonWebToken = require("jsonwebtoken");
 const catchAsync = require("../utils/catchAsync");
 const appError = require("../utils/appError");
+const {promisify}=require('util')
 
 function tokenMaker(userId) {
   return jsonWebToken.sign({ userId }, process.env.SECRET_KEY, {
@@ -44,10 +45,46 @@ exports.logIn = catchAsync(async (req, res, next) => {
     return next(new appError("Enter email and password", 400));
   }
   const loginUser = await userModel.findOne({ email }).select("+password");
-
-  if(!loginUser||!(loginUser.comparePassword(password,loginUser.password))){
-    return next(new appError('Invalid email or password',403))
+  
+  if (!loginUser||!(await loginUser.comparePassword(password, loginUser.password))) {
+    return next(new appError("Invalid email or password", 403));
+    
   }
   createAndSendToken(loginUser,200,req,res)
   
 });
+
+exports.logOut=(req,res)=>{
+  res.cookie('jwt','dummy cookie for logging out',{
+    expires:new Date(Date.now()+5*1000),
+    httpOnly:true
+  });
+  res.status(200).json({
+    status:"logged Out"
+  })
+}
+
+
+exports.protect=catchAsync(async(req,res,next)=>{
+
+  let token;
+  if(req.headers.authorization&&req.headers.authorization.startsWith('Bearer')){
+    token=req.headers.authorization.split(' ')[1]
+  }
+  else if(req.cookie.jwt){
+    token=req.cookie.jwt
+    
+  }
+  
+  if(!token) return next(new appError('Not logged in',401))
+  
+  let decoded=await promisify(jsonWebToken.verify)(token,process.env.SECRET_KEY)
+  console.log(decoded)
+ 
+
+  const loggedInUser=await userModel.findById({id:decoded.userId})
+  
+  
+ 
+  next()
+})

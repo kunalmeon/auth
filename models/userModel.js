@@ -60,11 +60,10 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-userSchema.methods.comparePassword=async function(password,databasePassword){
+userSchema.methods.comparePassword=async (password,databasePassword)=>{
   
-    let compare=await bcrypt.compare(password,databasePassword)
-    console.log(`password compared result:${compare}`)
-    return compare
+    return await bcrypt.compare(password,databasePassword);
+   
 }
 
 module.exports = mongoose.model("userModel", userSchema);

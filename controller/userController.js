@@ -12,8 +12,9 @@ res.status(200).json({
 }
 
 exports.getSingleUser=catchAsync(async(req,res,next)=>{
-  console.log(req.params.id)
+  
   const user=await userModel.findById(req.params.id);
+  console.log(req.params.id)
   if(!user){
     return next(new appError('No user With such id',400))
   }
